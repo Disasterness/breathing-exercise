@@ -1,8 +1,8 @@
 @Entry
 @Component
 struct SettingsPage {
-  @State time: number = AppStorage.get('time') as number;
-  @State speed: number = AppStorage.get('speed') as number;
+  @StorageLink('time') time: number = 1;
+  @StorageLink('speed') speed: number = 1;
 
   build() {
     Column({ space: 4 }) {
@@ -12,14 +12,12 @@ struct SettingsPage {
           .onClick(() => {
             if (this.time > 1) {
               this.time--
-              AppStorage.set('time', this.time)
             }
           })
         Text(`${this.time.toString()} min`).fontColor(Color.White).fontSize(18).fontWeight(FontWeight.Bold)
         Button('+').fontSize(24).fontColor(Color.White).onClick(() => {
           if (this.time < 10) {
             this.time++
-            AppStorage.set('time', this.time)
           }
         })
       }.width('100%').justifyContent(FlexAlign.Center)
@@ -29,14 +27,12 @@ struct SettingsPage {
           .onClick(() => {
             if (this.speed > 0.5) {
               this.speed -= 0.5
-              AppStorage.set('speed', this.speed)
             }
           })
         Text(`${this.speed.toFixed(2).toString()}x`).fontColor(Color.White).fontSize(18).fontWeight(FontWeight.Bold)
         Button('+').fontSize(24).fontColor(Color.White).onClick(() => {
           if (this.speed < 3) {
             this.speed += 0.5
-            AppStorage.set('speed', this.speed)
           }
         })
       }.width('100%').justifyContent(FlexAlign.Center)

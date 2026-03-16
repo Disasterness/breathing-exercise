@@ -37,6 +37,12 @@ struct Index {
         this.CustomListItem('Start', () => this.getUIContext().getRouter().pushUrl({
           url: 'pages/Main'
         }))
+        this.CustomListItem('Techniques', () => this.getUIContext().getRouter().pushUrl({
+          url: 'pages/TechniquesPage'
+        }))
+        this.CustomListItem('Statistics', () => this.getUIContext().getRouter().pushUrl({
+          url: 'pages/StatsPage'
+        }))
         this.CustomListItem('Settings', () => this.getUIContext().getRouter().pushUrl({
           url: 'pages/Settings'
         })
