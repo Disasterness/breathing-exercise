@@ -16,7 +16,6 @@ struct Main {
   private sessionTimeout: null | number = null
   private phaseInterval: null | number = null
   @State isStarted: boolean = false;
-  @State options: ArcButtonOptions | undefined = new ArcButtonOptions({})
   @StorageLink('speed') speed: number = 1;
   @StorageLink('time') time: number = 1;
   @StorageLink('selectedTechniqueId') selectedTechniqueId: string = '4-7-8';
@@ -28,7 +27,6 @@ struct Main {
 
   aboutToAppear(): void {
     this.updateTechnique();
-    this.initButton()
   }
 
   aboutToDisappear(): void {
@@ -40,21 +38,6 @@ struct Main {
     if (tech) {
       this.currentTechnique = tech;
     }
-  }
-
-  initButton() {
-    this.options = new ArcButtonOptions({
-      label: this.isStarted ? 'Stop' : 'Start',
-      position: ArcButtonPosition.BOTTOM_EDGE,
-      styleMode: ArcButtonStyleMode.NORMAL_LIGHT,
-      onClick: () => {
-        if (this.isStarted) {
-          this.stop()
-        } else {
-          this.start()
-        }
-      }
-    })
   }
 
   stop(completed: boolean = false) {
@@ -85,7 +68,6 @@ struct Main {
       clearInterval(this.phaseInterval);
       this.phaseInterval = null;
     }
-    this.initButton()
   }
 
   start() {
@@ -95,7 +77,6 @@ struct Main {
     this.currentPhaseIndex = 0;
     this.startPhase();
 
-    this.initButton()
     this.sessionTimeout = setTimeout(() => {
       this.stop(true);
     }, this.time * 60000)
@@ -148,7 +129,18 @@ struct Main {
   @Builder
   StartButton() {
     ArcButton({
-      options: this.options
+      options: new ArcButtonOptions({
+        label: this.isStarted ? 'Stop' : 'Start',
+        position: ArcButtonPosition.BOTTOM_EDGE,
+        styleMode: ArcButtonStyleMode.NORMAL_LIGHT,
+        onClick: () => {
+          if (this.isStarted) {
+            this.stop()
+          } else {
+            this.start()
+          }
+        }
+      })
     })
       .alignRules({
         middle: { anchor: '__container__', align: HorizontalAlign.Center },
