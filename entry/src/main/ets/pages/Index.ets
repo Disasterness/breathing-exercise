@@ -12,11 +12,12 @@ struct Index {
       Row() {
         Text(title)
           .attributeModifier(this.textModifier)
+          .fontColor('#006064')
       }
       .width('80%')
       .justifyContent(FlexAlign.Center)
       .borderRadius(20)
-      .backgroundColor('#33ffffff')
+      .backgroundColor('#334EB8DA')
       .height(30)
       .padding({ right: 8, left: 8 })
       .onClick(() => {
@@ -32,7 +33,10 @@ struct Index {
 
       ArcList({ initialIndex: 1 }) {
         ArcListItem() {
-          Text('Breathing Exercises').fontSize(16).fontColor(Color.White).fontWeight(FontWeight.Bold)
+          Text('Breathing Exercises')
+            .fontSize(16)
+            .fontColor('#006064')
+            .fontWeight(FontWeight.Bold)
         }
         this.CustomListItem('Start', () => this.getUIContext().getRouter().pushUrl({
           url: 'pages/Main'
@@ -54,6 +58,6 @@ struct Index {
     }
     .height('100%')
     .width('100%')
-    .backgroundColor('#1A1D21')
+    .backgroundColor('#E0F7FA')
   }
 }

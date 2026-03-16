@@ -21,19 +21,19 @@ struct SummaryPage {
     Column({ space: 20 }) {
       Text('Session Summary')
         .fontSize(22)
-        .fontColor(Color.White)
+        .fontColor('#006064')
         .fontWeight(FontWeight.Bold)
 
       Column({ space: 10 }) {
         Text(`Technique: ${this.result.techniqueName}`)
-          .fontColor(Color.White)
+          .fontColor('#006064')
         Text(`Duration: ${this.result.duration} min`)
-          .fontColor(Color.White)
+          .fontColor('#006064')
         Text(`Total Cycles: ${this.result.totalBreaths}`)
-          .fontColor(Color.White)
+          .fontColor('#006064')
       }
       .padding(20)
-      .backgroundColor('#33ffffff')
+      .backgroundColor('#1A4EB8DA')
       .borderRadius(20)
 
       Button('Done')
@@ -42,11 +42,12 @@ struct SummaryPage {
           this.getUIContext().getRouter().replaceUrl({ url: 'pages/Index' });
         })
         .backgroundColor('#4EB8DA')
+        .fontColor(Color.White)
     }
     .width('100%')
     .height('100%')
     .padding(20)
-    .backgroundColor('#1A1D21')
+    .backgroundColor('#E0F7FA')
     .justifyContent(FlexAlign.Center)
   }
 }

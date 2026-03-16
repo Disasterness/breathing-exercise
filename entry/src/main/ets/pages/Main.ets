@@ -166,8 +166,12 @@ struct Main {
 
   build() {
     Stack({ alignContent: Alignment.Center }) {
-      // Background layer - Light Teal (satisfied "no white background" and "not dark mode")
-      Rect().width('100%').height('100%').fill('#E0F7FA')
+      // Background layer - Expanded to full screen with safe area expansion
+      Rect()
+        .width('100%')
+        .height('100%')
+        .fill('#E0F7FA')
+        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
       // Decorative elements around the circle
       Circle({ width: 12, height: 6 })
@@ -220,5 +224,6 @@ struct Main {
     }
     .width('100%')
     .height('100%')
+    .backgroundColor('#E0F7FA')
   }
 }

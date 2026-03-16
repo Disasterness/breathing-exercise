@@ -18,7 +18,7 @@ struct TechniquesPage {
 
   build() {
     Column() {
-      Text('Techniques').fontSize(22).fontColor(Color.White).fontWeight(FontWeight.Bold).margin({ bottom: 10 })
+      Text('Techniques').fontSize(22).fontColor('#006064').fontWeight(FontWeight.Bold).margin({ bottom: 10 })
 
       ArcList() {
         ForEach(PRESET_TECHNIQUES, (item: BreathingTechnique) => {
@@ -26,20 +26,20 @@ struct TechniquesPage {
             Column({ space: 2 }) {
               Text(item.name)
                 .fontSize(16)
-                .fontColor(this.selectedTechniqueId === item.id ? '#4EB8DA' : Color.White)
+                .fontColor(this.selectedTechniqueId === item.id ? '#4EB8DA' : '#006064')
                 .fontWeight(FontWeight.Bold)
               Text(this.getPhasesText(item))
                 .fontSize(12)
-                .fontColor('#ccc')
+                .fontColor('#546E7A')
               Text(item.description)
                 .fontSize(10)
-                .fontColor(Color.White)
+                .fontColor('#006064')
                 .textAlign(TextAlign.Center)
                 .opacity(0.8)
             }
             .width('90%')
             .padding(8)
-            .backgroundColor('#1Affffff')
+            .backgroundColor('#1A4EB8DA')
             .borderRadius(15)
             .onClick(() => {
               this.selectedTechniqueId = item.id;
@@ -54,6 +54,6 @@ struct TechniquesPage {
     .width('100%')
     .height('100%')
     .padding(12)
-    .backgroundColor('#1A1D21')
+    .backgroundColor('#E0F7FA')
   }
 }
