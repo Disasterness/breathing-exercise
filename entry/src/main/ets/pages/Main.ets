@@ -157,39 +157,31 @@ struct Main {
   }
 
   build() {
-    RelativeContainer() {
-      // Breathing Circle with Gradient
-      Column() {
-        Circle({ width: 100, height: 100 })
-          .fill(Color.White)
-          .radialGradient({
-            center: [50, 50],
-            radius: 50,
-            colors: [['#80ffffff', 0.0], ['#00ffffff', 1.0]]
-          })
-          .scale({ x: this.circleScale, y: this.circleScale })
-      }
-      .justifyContent(FlexAlign.Center)
-      .width('100%')
-      .height('100%')
-      .alignRules({
-        center: { anchor: '__container__', align: VerticalAlign.Center },
-        middle: { anchor: '__container__', align: HorizontalAlign.Center }
-      })
+    Stack() {
+      // Background layer
+      Rect().width('100%').height('100%').fill('#ff0f2b0f')
 
-      // Text Overlay
-      Column() {
+      // Breathing Circle layer
+      Circle({ width: 100, height: 100 })
+        .radialGradient({
+          center: [50, 50],
+          radius: 50,
+          colors: [['#ff71cb5b', 0.0], ['#0071cb5b', 1.0]]
+        })
+        .scale({ x: this.circleScale, y: this.circleScale })
+        .hitTestBehavior(HitTestMode.None)
+
+      // Text Guidance layer
+      Column({ space: 5 }) {
         if (this.isStarted) {
           Text(this.currentPhase)
-            .fontSize(24)
+            .fontSize(20)
             .fontColor(Color.White)
             .fontWeight(FontWeight.Bold)
-            .shadow({ radius: 2, color: Color.Black, offsetX: 1, offsetY: 1 })
           Text(this.phaseCountdown.toString())
-            .fontSize(40)
+            .fontSize(32)
             .fontColor(Color.White)
             .fontWeight(FontWeight.Bolder)
-            .shadow({ radius: 2, color: Color.Black, offsetX: 1, offsetY: 1 })
         } else {
           Text(this.currentTechnique.name)
             .fontSize(16)
@@ -197,19 +189,15 @@ struct Main {
             .fontWeight(FontWeight.Bold)
           Text('Tap Start to begin')
             .fontSize(12)
-            .fontColor('#eee')
+            .fontColor('#ccc')
         }
       }
       .hitTestBehavior(HitTestMode.None)
-      .alignRules({
-        center: { anchor: '__container__', align: VerticalAlign.Center },
-        middle: { anchor: '__container__', align: HorizontalAlign.Center }
-      })
 
+      // Button layer
       this.StartButton()
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#ff358027')
   }
 }
