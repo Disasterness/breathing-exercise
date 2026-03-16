@@ -5,6 +5,16 @@ import { BreathingTechnique, PRESET_TECHNIQUES } from '../model/BreathingTechniq
 @Component
 struct TechniquesPage {
   @StorageLink('selectedTechniqueId') selectedTechniqueId: string = '4-7-8';
+  @StorageLink('customInhale') customInhale: number = 4;
+  @StorageLink('customHold') customHold: number = 4;
+  @StorageLink('customExhale') customExhale: number = 4;
+
+  getPhasesText(item: BreathingTechnique): string {
+    if (item.id === 'custom') {
+      return `${this.customInhale}s - ${this.customHold}s - ${this.customExhale}s`;
+    }
+    return item.phases.map(p => `${p.duration}s`).join(' - ');
+  }
 
   build() {
     Column() {
@@ -13,19 +23,23 @@ struct TechniquesPage {
       ArcList() {
         ForEach(PRESET_TECHNIQUES, (item: BreathingTechnique) => {
           ArcListItem() {
-            Column() {
+            Column({ space: 2 }) {
               Text(item.name)
-                .fontSize(18)
-                .fontColor(this.selectedTechniqueId === item.id ? Color.Green : Color.White)
+                .fontSize(16)
+                .fontColor(this.selectedTechniqueId === item.id ? '#4EB8DA' : Color.White)
                 .fontWeight(FontWeight.Bold)
-              Text(item.description)
+              Text(this.getPhasesText(item))
                 .fontSize(12)
+                .fontColor('#ccc')
+              Text(item.description)
+                .fontSize(10)
                 .fontColor(Color.White)
                 .textAlign(TextAlign.Center)
+                .opacity(0.8)
             }
             .width('90%')
-            .padding(10)
-            .backgroundColor('#33ffffff')
+            .padding(8)
+            .backgroundColor('#1Affffff')
             .borderRadius(15)
             .onClick(() => {
               this.selectedTechniqueId = item.id;
@@ -34,12 +48,12 @@ struct TechniquesPage {
           }
         }, (item: BreathingTechnique) => item.id)
       }
-      .space({ unit: LengthUnit.VP, value: 10 })
-      .height('80%')
+      .space({ unit: LengthUnit.VP, value: 8 })
+      .height('85%')
     }
     .width('100%')
     .height('100%')
-    .padding(16)
-    .backgroundColor('#ff358027')
+    .padding(12)
+    .backgroundColor('#1A1D21')
   }
 }

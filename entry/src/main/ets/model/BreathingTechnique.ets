@@ -40,5 +40,11 @@ export const PRESET_TECHNIQUES: BreathingTechnique[] = [
       { name: 'Inhale', duration: 2 },
       { name: 'Exhale', duration: 2 }
     ]
+  },
+  {
+    id: 'custom',
+    name: 'Custom',
+    description: 'Your own custom rhythm.',
+    phases: [] // Will be populated dynamically
   }
 ];

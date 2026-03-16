@@ -14,6 +14,11 @@ struct Main {
   @StorageLink('speed') speed: number = 1;
   @StorageLink('time') time: number = 1;
   @StorageLink('selectedTechniqueId') selectedTechniqueId: string = '4-7-8';
+
+  @StorageLink('customInhale') customInhale: number = 4;
+  @StorageLink('customHold') customHold: number = 4;
+  @StorageLink('customExhale') customExhale: number = 4;
+
   @State currentPhase: string = 'Ready';
   @State phaseCountdown: number = 0;
   @State circleScale: number = 1.0;
@@ -33,6 +38,13 @@ struct Main {
     const tech = PRESET_TECHNIQUES.find(t => t.id === this.selectedTechniqueId);
     if (tech) {
       this.currentTechnique = tech;
+      if (tech.id === 'custom') {
+        this.currentTechnique.phases = [
+          { name: 'Inhale', duration: this.customInhale },
+          { name: 'Hold', duration: this.customHold },
+          { name: 'Exhale', duration: this.customExhale }
+        ];
+      }
     }
   }
 
@@ -85,12 +97,12 @@ struct Main {
     // Set circle animation based on phase
     if (phase.name === 'Inhale') {
       // Inflate
-      animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.Linear }, () => {
-        this.circleScale = 2.0;
+      animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.EaseInOut }, () => {
+        this.circleScale = 1.5;
       });
     } else if (phase.name === 'Exhale') {
       // Deflate
-      animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.Linear }, () => {
+      animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.EaseInOut }, () => {
         this.circleScale = 0.8;
       });
     }
@@ -155,29 +167,47 @@ struct Main {
   build() {
     Stack({ alignContent: Alignment.Center }) {
       // Background layer
-      Rect().width('100%').height('100%').fill('#ff0f2b0f')
+      Rect().width('100%').height('100%').fill('#1A1D21')
 
-      // Breathing Circle layer
-      Circle({ width: 100, height: 100 })
+      // Decorative dots/semi-circles
+      Circle({ width: 12, height: 6 })
+        .fill('#4EB8DA')
+        .position({ x: '50%', y: '20%' })
+        .translate({ x: -6 })
+        .clip(new Rect({ width: 12, height: 6 }))
+
+      Circle({ width: 8, height: 4 })
+        .fill('#4EB8DA')
+        .position({ x: '65%', y: '75%' })
+        .rotate({ angle: 45 })
+
+      Circle({ width: 6, height: 3 })
+        .fill('#4EB8DA')
+        .position({ x: '60%', y: '78%' })
+        .rotate({ angle: 30 })
+
+      // Breathing Circle layer with Gradient
+      Circle({ width: 160, height: 160 })
         .radialGradient({
-          center: [50, 50],
-          radius: 50,
-          colors: [['#ff71cb5b', 0.0], ['#0071cb5b', 1.0]]
+          center: [80, 80],
+          radius: 80,
+          colors: [['#4EB8DA', 0.0], ['#1A4E5E', 1.0]]
         })
         .scale({ x: this.circleScale, y: this.circleScale })
         .hitTestBehavior(HitTestMode.None)
+        .opacity(0.8)
 
       // Text Guidance layer
       Column({ space: 5 }) {
         if (this.isStarted) {
-          Text(this.currentPhase)
+          Text(this.currentPhase.toLowerCase())
+            .fontSize(24)
+            .fontColor(Color.White)
+            .fontWeight(FontWeight.Medium)
+          Text(this.phaseCountdown.toString())
             .fontSize(20)
             .fontColor(Color.White)
-            .fontWeight(FontWeight.Bold)
-          Text(this.phaseCountdown.toString())
-            .fontSize(32)
-            .fontColor(Color.White)
-            .fontWeight(FontWeight.Bolder)
+            .opacity(0.8)
         } else {
           Text(this.currentTechnique.name)
             .fontSize(16)
