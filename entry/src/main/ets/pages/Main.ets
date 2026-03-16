@@ -166,35 +166,29 @@ struct Main {
 
   build() {
     Stack({ alignContent: Alignment.Center }) {
-      // Background layer - Expanded to full screen with safe area expansion
-      Rect()
-        .width('100%')
-        .height('100%')
-        .fill('#E0F7FA')
-        .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-
       // Decorative elements around the circle
-      Circle({ width: 12, height: 6 })
+      Circle({ width: 10, height: 10 })
         .fill('#4EB8DA')
         .position({ x: '50%', y: '15%' })
-        .translate({ x: -6 })
-        .clip(new Rect({ width: 12, height: 6 }))
+        .translate({ x: -5 })
 
-      Circle({ width: 8, height: 4 })
+      Circle({ width: 6, height: 6 })
         .fill('#4EB8DA')
         .position({ x: '75%', y: '80%' })
-        .rotate({ angle: 45 })
 
       // Breathing Circle layer with Gradient
+      // Match the gradient end color to the background to avoid square artifacts
       Circle({ width: 100, height: 100 })
         .radialGradient({
           center: [50, 50],
           radius: 50,
-          colors: [['#4EB8DA', 0.0], ['#B2EBF2', 1.0]]
+          colors: [['#4EB8DA', 0.0], ['#E0F7FA', 1.0]]
         })
         .scale({ x: this.circleScale, y: this.circleScale })
         .hitTestBehavior(HitTestMode.None)
         .opacity(0.9)
+        .backgroundColor(Color.Transparent)
+        .clip(true)
 
       // Text Guidance layer
       Column({ space: 5 }) {
@@ -218,12 +212,15 @@ struct Main {
         }
       }
       .hitTestBehavior(HitTestMode.None)
+      .backgroundColor(Color.Transparent)
 
-      // Button layer
+      // Button layer - Explicitly aligned to bottom
       this.StartButton()
+        .align(Alignment.Bottom)
     }
     .width('100%')
     .height('100%')
     .backgroundColor('#E0F7FA')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 }
