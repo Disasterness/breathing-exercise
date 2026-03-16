@@ -84,17 +84,16 @@ struct Main {
 
     // Set circle animation based on phase
     if (phase.name === 'Inhale') {
-      // Expand
-      animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.EaseInOut }, () => {
+      // Expand slowly until the end of the phase
+      animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.Linear }, () => {
         this.circleScale = 2.0;
       });
     } else if (phase.name === 'Exhale') {
-      // Contract
-      animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.EaseInOut }, () => {
+      // Contract slowly until the end of the phase
+      animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.Linear }, () => {
         this.circleScale = 1.0;
       });
     }
-    // For 'Hold', stay at current scale
 
     this.vibrate();
 
@@ -159,10 +158,15 @@ struct Main {
 
   build() {
     RelativeContainer() {
-      // Breathing Circle
+      // Breathing Circle with Gradient
       Column() {
         Circle({ width: 100, height: 100 })
-          .fill('#80ffffff') // Semi-transparent white for high visibility against green background
+          .fill(Color.White)
+          .radialGradient({
+            center: [50, 50],
+            radius: 50,
+            colors: [['#80ffffff', 0.0], ['#00ffffff', 1.0]]
+          })
           .scale({ x: this.circleScale, y: this.circleScale })
       }
       .justifyContent(FlexAlign.Center)
@@ -180,10 +184,12 @@ struct Main {
             .fontSize(24)
             .fontColor(Color.White)
             .fontWeight(FontWeight.Bold)
+            .shadow({ radius: 2, color: Color.Black, offsetX: 1, offsetY: 1 })
           Text(this.phaseCountdown.toString())
             .fontSize(40)
             .fontColor(Color.White)
             .fontWeight(FontWeight.Bolder)
+            .shadow({ radius: 2, color: Color.Black, offsetX: 1, offsetY: 1 })
         } else {
           Text(this.currentTechnique.name)
             .fontSize(16)
