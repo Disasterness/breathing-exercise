@@ -166,8 +166,8 @@ struct Main {
 
   build() {
     Stack({ alignContent: Alignment.Center }) {
-      // Background layer
-      Rect().width('100%').height('100%').fill('#1A1D21')
+      // Background layer - Reverted to White
+      Rect().width('100%').height('100%').fill(Color.White)
 
       // Decorative dots/semi-circles
       Circle({ width: 12, height: 6 })
@@ -202,20 +202,20 @@ struct Main {
         if (this.isStarted) {
           Text(this.currentPhase.toLowerCase())
             .fontSize(24)
-            .fontColor(Color.White)
+            .fontColor(Color.Black)
             .fontWeight(FontWeight.Medium)
           Text(this.phaseCountdown.toString())
             .fontSize(20)
-            .fontColor(Color.White)
+            .fontColor(Color.Black)
             .opacity(0.8)
         } else {
           Text(this.currentTechnique.name)
             .fontSize(16)
-            .fontColor(Color.White)
+            .fontColor(Color.Black)
             .fontWeight(FontWeight.Bold)
           Text('Tap Start to begin')
             .fontSize(12)
-            .fontColor('#ccc')
+            .fontColor('#666')
         }
       }
       .hitTestBehavior(HitTestMode.None)
