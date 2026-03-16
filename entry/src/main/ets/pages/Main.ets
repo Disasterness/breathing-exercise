@@ -1,4 +1,3 @@
-import lottie, { AnimationItem } from '@ohos/lottie';
 import { ArcButton, ArcButtonOptions, ArcButtonPosition } from '@ohos.arkui.advanced.ArcButton';
 import { ArcButtonStyleMode, ButtonOptions, promptAction } from '@kit.ArkUI';
 import vibrator from '@ohos.vibrator';
@@ -9,10 +8,6 @@ import { SessionResult } from '../model/SessionModel';
 @Entry
 @Component
 struct Main {
-  private renderingSettings: RenderingContextSettings = new RenderingContextSettings(true)
-  private canvasRenderingContext: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.renderingSettings)
-  private animateItem: AnimationItem | null = null;
-  private animateName: string = 'animation'; // name
   private sessionTimeout: null | number = null
   private phaseInterval: null | number = null
   @State isStarted: boolean = false;
@@ -21,6 +16,7 @@ struct Main {
   @StorageLink('selectedTechniqueId') selectedTechniqueId: string = '4-7-8';
   @State currentPhase: string = 'Ready';
   @State phaseCountdown: number = 0;
+  @State circleScale: number = 1.0;
 
   private currentTechnique: BreathingTechnique = PRESET_TECHNIQUES[0];
   private currentPhaseIndex: number = 0;
@@ -41,10 +37,10 @@ struct Main {
   }
 
   stop(completed: boolean = false) {
-    this.animateItem?.stop()
     this.isStarted = false;
     this.currentPhase = 'Ready';
     this.phaseCountdown = 0;
+    this.circleScale = 1.0;
 
     if (completed) {
       const result: SessionResult = {
@@ -72,7 +68,6 @@ struct Main {
 
   start() {
     this.updateTechnique();
-    this.animateItem?.play()
     this.isStarted = true
     this.currentPhaseIndex = 0;
     this.startPhase();
@@ -86,6 +81,17 @@ struct Main {
     const phase = this.currentTechnique.phases[this.currentPhaseIndex];
     this.currentPhase = phase.name;
     this.phaseCountdown = phase.duration;
+
+    // Set circle animation
+    if (phase.name === 'Inhale') {
+      animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.EaseInOut }, () => {
+        this.circleScale = 2.0;
+      });
+    } else if (phase.name === 'Exhale') {
+      animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.EaseInOut }, () => {
+        this.circleScale = 1.0;
+      });
+    }
 
     this.vibrate();
 
@@ -117,8 +123,6 @@ struct Main {
       }, (error) => {
         if (error) {
           console.error('vibrate fail, error.code: ' + error.code + ' error.message: ' + error.message);
-        } else {
-          console.log('vibrate success');
         }
       });
     } catch (err) {
@@ -149,73 +153,52 @@ struct Main {
   }
 
   build() {
-    Stack() {
-      Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
-        Row() {
-          Canvas(this.canvasRenderingContext)
-            .width('100%')
-            .height('100%')
-            .backgroundColor(Color.White)
-            .onReady(() => {
-              if (this.animateItem != null) {
-                this.animateItem?.resize();
-              } else {
-                this.canvasRenderingContext.imageSmoothingEnabled = true;
-                this.canvasRenderingContext.imageSmoothingQuality = 'high'
-                this.loadAnimation();
-              }
-            })
-        }.width('100%').justifyContent(FlexAlign.Center).backgroundColor('#aaa')
+    RelativeContainer() {
+      // Breathing Circle
+      Column() {
+        Circle({ width: 100, height: 100 })
+          .fill('#3371cb5b')
+          .scale({ x: this.circleScale, y: this.circleScale })
       }
+      .justifyContent(FlexAlign.Center)
       .width('100%')
       .height('100%')
+      .alignRules({
+        center: { anchor: '__container__', align: VerticalAlign.Center },
+        middle: { anchor: '__container__', align: HorizontalAlign.Center }
+      })
 
-      if (this.isStarted) {
-        Column() {
+      // Text Overlay
+      Column() {
+        if (this.isStarted) {
           Text(this.currentPhase)
             .fontSize(24)
-            .fontColor(Color.Black)
+            .fontColor(Color.White)
             .fontWeight(FontWeight.Bold)
           Text(this.phaseCountdown.toString())
             .fontSize(40)
-            .fontColor(Color.Black)
+            .fontColor(Color.White)
             .fontWeight(FontWeight.Bolder)
-        }
-        .hitTestBehavior(HitTestMode.None)
-      } else {
-        Column() {
+        } else {
           Text(this.currentTechnique.name)
             .fontSize(16)
-            .fontColor(Color.Black)
+            .fontColor(Color.White)
             .fontWeight(FontWeight.Bold)
           Text('Tap Start to begin')
             .fontSize(12)
-            .fontColor(Color.Gray)
+            .fontColor('#ccc')
         }
       }
+      .hitTestBehavior(HitTestMode.None)
+      .alignRules({
+        center: { anchor: '__container__', align: VerticalAlign.Center },
+        middle: { anchor: '__container__', align: HorizontalAlign.Center }
+      })
 
       this.StartButton()
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(Color.White)
-  }
-
-  loadAnimation() {
-    this.animateItem = lottie.loadAnimation({
-      container: this.canvasRenderingContext,
-      renderer: 'canvas',
-      loop: true,
-      autoplay: false,
-      name: this.animateName,
-      contentMode: 'Contain',
-      path: 'animation/Breath.json'
-    })
-
-    this.animateItem.addEventListener('DOMLoaded', (_args: Record<string, string>): void => {
-      this.animateItem?.changeColor([225, 25, 100, 1]);
-      this.animateItem?.setSpeed(this.speed);
-      this.animateItem?.resize();
-    });
+    .backgroundColor('#ff358027')
   }
 }
