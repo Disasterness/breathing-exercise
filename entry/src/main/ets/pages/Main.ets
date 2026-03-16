@@ -82,16 +82,19 @@ struct Main {
     this.currentPhase = phase.name;
     this.phaseCountdown = phase.duration;
 
-    // Set circle animation
+    // Set circle animation based on phase
     if (phase.name === 'Inhale') {
+      // Expand
       animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.EaseInOut }, () => {
         this.circleScale = 2.0;
       });
     } else if (phase.name === 'Exhale') {
+      // Contract
       animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.EaseInOut }, () => {
         this.circleScale = 1.0;
       });
     }
+    // For 'Hold', stay at current scale
 
     this.vibrate();
 
@@ -123,6 +126,8 @@ struct Main {
       }, (error) => {
         if (error) {
           console.error('vibrate fail, error.code: ' + error.code + ' error.message: ' + error.message);
+        } else {
+          console.log('vibrate success');
         }
       });
     } catch (err) {
@@ -157,7 +162,7 @@ struct Main {
       // Breathing Circle
       Column() {
         Circle({ width: 100, height: 100 })
-          .fill('#3371cb5b')
+          .fill('#80ffffff') // Semi-transparent white for high visibility against green background
           .scale({ x: this.circleScale, y: this.circleScale })
       }
       .justifyContent(FlexAlign.Center)
@@ -186,7 +191,7 @@ struct Main {
             .fontWeight(FontWeight.Bold)
           Text('Tap Start to begin')
             .fontSize(12)
-            .fontColor('#ccc')
+            .fontColor('#eee')
         }
       }
       .hitTestBehavior(HitTestMode.None)
