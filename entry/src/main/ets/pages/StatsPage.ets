@@ -35,10 +35,11 @@ struct StatsPage {
           this.getUIContext().getRouter().back()
         })
         .margin({ top: 20 })
+        .backgroundColor('#4EB8DA')
     }
     .width('100%')
     .height('100%')
     .padding(20)
-    .backgroundColor('#ff358027')
+    .backgroundColor('#1A1D21')
   }
 }

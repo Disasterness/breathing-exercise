@@ -16,7 +16,7 @@ struct Index {
       .width('80%')
       .justifyContent(FlexAlign.Center)
       .borderRadius(20)
-      .backgroundColor('#a171cb5b')
+      .backgroundColor('#33ffffff')
       .height(30)
       .padding({ right: 8, left: 8 })
       .onClick(() => {
@@ -54,6 +54,6 @@ struct Index {
     }
     .height('100%')
     .width('100%')
-    .backgroundColor('#ff358027')
+    .backgroundColor('#1A1D21')
   }
 }

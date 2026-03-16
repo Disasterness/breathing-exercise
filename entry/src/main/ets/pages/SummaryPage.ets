@@ -41,12 +41,12 @@ struct SummaryPage {
           this.getUIContext().getRouter().clear();
           this.getUIContext().getRouter().replaceUrl({ url: 'pages/Index' });
         })
-        .backgroundColor(Color.Green)
+        .backgroundColor('#4EB8DA')
     }
     .width('100%')
     .height('100%')
     .padding(20)
-    .backgroundColor('#ff358027')
+    .backgroundColor('#1A1D21')
     .justifyContent(FlexAlign.Center)
   }
 }
