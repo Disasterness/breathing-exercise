@@ -1,7 +1,7 @@
 import lottie, { AnimationItem } from '@ohos/lottie';
 import { ArcButton, ArcButtonOptions, ArcButtonPosition } from '@ohos.arkui.advanced.ArcButton';
 import { ArcButtonStyleMode, ButtonOptions, promptAction } from '@kit.ArkUI';
-import { vibrator } from '@kit.BasicServicesKit';
+import vibrator from '@ohos.vibrator';
 import { BreathingTechnique, PRESET_TECHNIQUES, Phase } from '../model/BreathingTechnique';
 import { StatsService } from '../service/StatsService';
 import { SessionResult } from '../model/SessionModel';
@@ -220,7 +220,7 @@ struct Main {
       path: 'animation/Breath.json'
     })
 
-    this.animateItem.addEventListener('DOMLoaded', (args: Object): void => {
+    this.animateItem.addEventListener('DOMLoaded', (_args: Record<string, string>): void => {
       this.animateItem?.changeColor([225, 25, 100, 1]);
       this.animateItem?.setSpeed(this.speed);
       this.animateItem?.resize();

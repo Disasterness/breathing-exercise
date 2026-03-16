@@ -11,7 +11,7 @@ export class StatsService {
     let totalMinutes = AppStorage.get<number>('totalMinutes') || 0;
     AppStorage.setOrCreate('totalMinutes', totalMinutes + result.duration);
 
-    this.updateStreak();
+    StatsService.updateStreak();
   }
 
   private static updateStreak() {
