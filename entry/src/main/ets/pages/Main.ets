@@ -91,7 +91,7 @@ struct Main {
     } else if (phase.name === 'Exhale') {
       // Deflate
       animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.Linear }, () => {
-        this.circleScale = 1.0;
+        this.circleScale = 0.8;
       });
     }
 
@@ -153,50 +153,42 @@ struct Main {
   }
 
   build() {
-    Stack() {
+    Stack({ alignContent: Alignment.Center }) {
       // Background layer
       Rect().width('100%').height('100%').fill('#ff0f2b0f')
 
-      // Main content layer (Circle + Text)
-      Column() {
-        Stack() {
-          Circle({ width: 100, height: 100 })
-            .radialGradient({
-              center: [50, 50],
-              radius: 50,
-              colors: [['#ff71cb5b', 0.0], ['#0071cb5b', 1.0]]
-            })
-            .scale({ x: this.circleScale, y: this.circleScale })
-            .hitTestBehavior(HitTestMode.None)
+      // Breathing Circle layer
+      Circle({ width: 100, height: 100 })
+        .radialGradient({
+          center: [50, 50],
+          radius: 50,
+          colors: [['#ff71cb5b', 0.0], ['#0071cb5b', 1.0]]
+        })
+        .scale({ x: this.circleScale, y: this.circleScale })
+        .hitTestBehavior(HitTestMode.None)
 
-          Column({ space: 5 }) {
-            if (this.isStarted) {
-              Text(this.currentPhase)
-                .fontSize(20)
-                .fontColor(Color.White)
-                .fontWeight(FontWeight.Bold)
-              Text(this.phaseCountdown.toString())
-                .fontSize(32)
-                .fontColor(Color.White)
-                .fontWeight(FontWeight.Bolder)
-            } else {
-              Text(this.currentTechnique.name)
-                .fontSize(16)
-                .fontColor(Color.White)
-                .fontWeight(FontWeight.Bold)
-              Text('Tap Start to begin')
-                .fontSize(12)
-                .fontColor('#ccc')
-            }
-          }
-          .hitTestBehavior(HitTestMode.None)
+      // Text Guidance layer
+      Column({ space: 5 }) {
+        if (this.isStarted) {
+          Text(this.currentPhase)
+            .fontSize(20)
+            .fontColor(Color.White)
+            .fontWeight(FontWeight.Bold)
+          Text(this.phaseCountdown.toString())
+            .fontSize(32)
+            .fontColor(Color.White)
+            .fontWeight(FontWeight.Bolder)
+        } else {
+          Text(this.currentTechnique.name)
+            .fontSize(16)
+            .fontColor(Color.White)
+            .fontWeight(FontWeight.Bold)
+          Text('Tap Start to begin')
+            .fontSize(12)
+            .fontColor('#ccc')
         }
-        .width('100%')
-        .height('100%')
       }
-      .width('100%')
-      .height('100%')
-      .padding({ bottom: 80 }) // Move circle and text up to make room for bottom button
+      .hitTestBehavior(HitTestMode.None)
 
       // Button layer
       this.StartButton()
