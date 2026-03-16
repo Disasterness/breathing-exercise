@@ -214,9 +214,8 @@ struct Main {
       .hitTestBehavior(HitTestMode.None)
       .backgroundColor(Color.Transparent)
 
-      // Button layer - Explicitly aligned to bottom
+      // Button layer
       this.StartButton()
-        .align(Alignment.Bottom)
     }
     .width('100%')
     .height('100%')
