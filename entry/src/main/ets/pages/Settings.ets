@@ -1,5 +1,3 @@
-import { LengthUnit } from '@kit.ArkUI'
-
 @Entry
 @Component
 struct SettingsPage {
@@ -11,15 +9,51 @@ struct SettingsPage {
   @StorageLink('dailyReminder') dailyReminder: boolean = false;
 
   @Builder
-  Adjuster(label: string, value: number, onMinus: () => void, onPlus: () => void) {
+  Adjuster(
+    label: string,
+    value: number,
+    onMinus: () => void,
+    onPlus: () => void
+  ) {
     Row() {
-      Text(label).fontColor('#006064').fontSize(14).width('40%')
-      Row() {
-        Button('-').onClick(onMinus).backgroundColor('#334EB8DA').width(30).height(30).fontColor('#006064')
-        Text(value.toString()).fontColor('#006064').margin({ left: 10, right: 10 }).fontSize(16)
-        Button('+').onClick(onPlus).backgroundColor('#334EB8DA').width(30).height(30).fontColor('#006064')
+
+      Text(label)
+        .fontSize(14)
+        .fontColor('#006064')
+        .width('35%')
+
+      Stack({ alignContent: Alignment.Center }) {
+        Circle({ width: 28, height: 28 })
+          .fill('#4EB8DA')
+
+        Text('-')
+          .fontSize(18)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(Color.White)
       }
-    }.width('100%').justifyContent(FlexAlign.SpaceBetween).padding(5)
+      .onClick(onMinus)
+
+      Text(value.toString())
+        .fontSize(14)
+        .fontWeight(FontWeight.Bold)
+        .width(30)
+        .textAlign(TextAlign.Center)
+
+      Stack({ alignContent: Alignment.Center }) {
+        Circle({ width: 28, height: 28 })
+          .fill('#4EB8DA')
+
+        Text('+')
+          .fontSize(18)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(Color.White)
+      }
+      .onClick(onPlus)
+
+    }
+    .width('100%')
+    .justifyContent(FlexAlign.SpaceBetween)
+    .alignItems(VerticalAlign.Center)
   }
 
   build() {

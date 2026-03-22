@@ -1,27 +1,28 @@
 import { ArcButton, ArcButtonOptions, ArcButtonPosition } from '@ohos.arkui.advanced.ArcButton';
-import { ArcButtonStyleMode, ButtonOptions, promptAction } from '@kit.ArkUI';
+import { ArcButtonStyleMode } from '@kit.ArkUI';
 import vibrator from '@ohos.vibrator';
 import { BreathingTechnique, PRESET_TECHNIQUES, Phase } from '../model/BreathingTechnique';
-import { StatsService } from '../service/StatsService';
 import { SessionResult } from '../model/SessionModel';
+import { StatsService } from '../service/StatsService';
 
 @Entry
 @Component
 struct Main {
-  private sessionTimeout: null | number = null
-  private phaseInterval: null | number = null
+  private sessionTimeout: number | null = null;
+  private phaseInterval: number | null = null;
+  private sizeInterval: number | null = null;
+
   @State isStarted: boolean = false;
+  @State currentPhase: string = 'Ready';
+  @State phaseCountdown: number = 0;
+  @State circleSize: number = 118;
+
   @StorageLink('speed') speed: number = 1;
   @StorageLink('time') time: number = 1;
-  @StorageLink('selectedTechniqueId') selectedTechniqueId: string = '4-7-8';
-
+  @StorageLink('selectedTechniqueId') selectedTechniqueId: string = 'box';
   @StorageLink('customInhale') customInhale: number = 4;
   @StorageLink('customHold') customHold: number = 4;
   @StorageLink('customExhale') customExhale: number = 4;
-
-  @State currentPhase: string = 'Ready';
-  @State phaseCountdown: number = 0;
-  @State circleScale: number = 1.0;
 
   private currentTechnique: BreathingTechnique = PRESET_TECHNIQUES[0];
   private currentPhaseIndex: number = 0;
@@ -31,195 +32,284 @@ struct Main {
   }
 
   aboutToDisappear(): void {
-    this.stop();
+    this.clearTimers();
   }
 
-  updateTechnique() {
-    const tech = PRESET_TECHNIQUES.find(t => t.id === this.selectedTechniqueId);
-    if (tech) {
-      this.currentTechnique = tech;
-      if (tech.id === 'custom') {
-        this.currentTechnique.phases = [
-          { name: 'Inhale', duration: this.customInhale },
-          { name: 'Hold', duration: this.customHold },
-          { name: 'Exhale', duration: this.customExhale }
-        ];
-      }
+  private clearTimers(): void {
+    if (this.sessionTimeout !== null) {
+      clearTimeout(this.sessionTimeout);
+      this.sessionTimeout = null;
+    }
+    if (this.phaseInterval !== null) {
+      clearInterval(this.phaseInterval);
+      this.phaseInterval = null;
+    }
+    if (this.sizeInterval !== null) {
+      clearInterval(this.sizeInterval);
+      this.sizeInterval = null;
     }
   }
 
-  stop(completed: boolean = false) {
+  private stopSizeAnimation(): void {
+    if (this.sizeInterval !== null) {
+      clearInterval(this.sizeInterval);
+      this.sizeInterval = null;
+    }
+  }
+
+  private updateTechnique(): void {
+    const found: BreathingTechnique | undefined = PRESET_TECHNIQUES.find(
+      (item: BreathingTechnique): boolean => item.id === this.selectedTechniqueId
+    );
+
+    if (found) {
+      this.currentTechnique = {
+        id: found.id,
+        name: found.name,
+        description: found.description,
+        phases: found.phases.map((phase: Phase): Phase => ({
+          name: phase.name,
+          duration: phase.duration
+        }))
+      };
+    }
+
+    if (this.currentTechnique.id === 'custom') {
+      this.currentTechnique = {
+        id: 'custom',
+        name: 'Custom',
+        description: 'Custom breathing technique',
+        phases: [
+          { name: 'Inhale', duration: this.customInhale },
+          { name: 'Hold', duration: this.customHold },
+          { name: 'Exhale', duration: this.customExhale }
+        ]
+      };
+    }
+  }
+
+  private resetUi(): void {
     this.isStarted = false;
     this.currentPhase = 'Ready';
     this.phaseCountdown = 0;
-    this.circleScale = 1.0;
+    this.circleSize = 118;
+    this.currentPhaseIndex = 0;
+  }
+
+  stop(completed: boolean = false): void {
+    this.clearTimers();
 
     if (completed) {
+      const totalPhaseDuration: number = this.currentTechnique.phases.reduce(
+        (sum: number, phase: Phase): number => sum + phase.duration,
+        0
+      );
+
       const result: SessionResult = {
         techniqueName: this.currentTechnique.name,
         duration: this.time,
-        totalBreaths: Math.floor((this.time * 60) / this.currentTechnique.phases.reduce((a, b) => a + b.duration, 0)),
+        totalBreaths: totalPhaseDuration > 0 ? Math.floor((this.time * 60) / totalPhaseDuration) : 0,
         timestamp: Date.now()
       };
+
       StatsService.saveSession(result);
+
+      this.resetUi();
+
       this.getUIContext().getRouter().replaceUrl({
         url: 'pages/SummaryPage',
         params: { result: result }
       });
+      return;
     }
 
-    if (this.sessionTimeout) {
-      clearTimeout(this.sessionTimeout);
-      this.sessionTimeout = null;
-    }
-    if (this.phaseInterval) {
-      clearInterval(this.phaseInterval);
-      this.phaseInterval = null;
-    }
+    this.resetUi();
   }
 
-  start() {
+  start(): void {
+    this.clearTimers();
     this.updateTechnique();
-    this.isStarted = true
+
+    this.isStarted = true;
     this.currentPhaseIndex = 0;
+    this.circleSize = 118;
+
     this.startPhase();
 
-    this.sessionTimeout = setTimeout(() => {
+    this.sessionTimeout = setTimeout((): void => {
       this.stop(true);
-    }, this.time * 60000)
+    }, this.time * 60 * 1000);
   }
 
-  startPhase() {
-    const phase = this.currentTechnique.phases[this.currentPhaseIndex];
+  private animateCircleTo(targetSize: number, phaseDuration: number): void {
+    this.stopSizeAnimation();
+
+    const startSize: number = this.circleSize;
+    const totalMs: number = phaseDuration * 1000 / this.speed;
+    const stepMs: number = 40;
+    const steps: number = Math.max(1, Math.floor(totalMs / stepMs));
+    let currentStep: number = 0;
+
+    this.sizeInterval = setInterval((): void => {
+      currentStep++;
+
+      const progress: number = currentStep / steps;
+      const eased: number = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+      this.circleSize = startSize + (targetSize - startSize) * eased;
+
+      if (currentStep >= steps) {
+        this.circleSize = targetSize;
+        this.stopSizeAnimation();
+      }
+    }, stepMs);
+  }
+
+  private startPhase(): void {
+    const phase: Phase = this.currentTechnique.phases[this.currentPhaseIndex];
     this.currentPhase = phase.name;
     this.phaseCountdown = phase.duration;
 
-    // Set circle animation based on phase
     if (phase.name === 'Inhale') {
-      // Inflate - More pronounced expansion
-      animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.EaseInOut }, () => {
-        this.circleScale = 2.2;
-      });
+      this.animateCircleTo(178, phase.duration);
+    } else if (phase.name === 'Hold') {
+      this.stopSizeAnimation();
     } else if (phase.name === 'Exhale') {
-      // Deflate - More pronounced contraction
-      animateTo({ duration: phase.duration * 1000 / this.speed, curve: Curve.EaseInOut }, () => {
-        this.circleScale = 0.8;
-      });
+      this.animateCircleTo(96, phase.duration);
     }
 
     this.vibrate();
 
-    if (this.phaseInterval) {
+    if (this.phaseInterval !== null) {
       clearInterval(this.phaseInterval);
+      this.phaseInterval = null;
     }
 
-    this.phaseInterval = setInterval(() => {
-      this.phaseCountdown--;
+    this.phaseInterval = setInterval((): void => {
+      this.phaseCountdown = this.phaseCountdown - 1;
+
       if (this.phaseCountdown <= 0) {
+        if (this.phaseInterval !== null) {
+          clearInterval(this.phaseInterval);
+          this.phaseInterval = null;
+        }
         this.nextPhase();
       }
     }, 1000 / this.speed);
   }
 
-  nextPhase() {
+  private nextPhase(): void {
     this.currentPhaseIndex = (this.currentPhaseIndex + 1) % this.currentTechnique.phases.length;
     this.startPhase();
   }
 
-  vibrate() {
+  private vibrate(): void {
     try {
-      vibrator.startVibration({
-        type: 'time',
-        duration: 100,
-      }, {
-        id: 0,
-        usage: 'alarm'
-      }, (error) => {
-        if (error) {
-          console.error('vibrate fail, error.code: ' + error.code + ' error.message: ' + error.message);
-        } else {
-          console.log('vibrate success');
+      vibrator.startVibration(
+        {
+          type: 'time',
+          duration: 80
+        },
+        {
+          id: 0,
+          usage: 'alarm'
+        },
+        (error?: Object): void => {
+          if (error) {
+            console.error(`vibration error: ${JSON.stringify(error)}`);
+          }
         }
-      });
+      );
     } catch (err) {
-      console.error('vibrate fail, err: ' + JSON.stringify(err));
+      console.error(`vibration catch: ${JSON.stringify(err)}`);
     }
   }
 
   @Builder
-  StartButton() {
-    ArcButton({
-      options: new ArcButtonOptions({
-        label: this.isStarted ? 'Stop' : 'Start',
-        position: ArcButtonPosition.BOTTOM_EDGE,
-        styleMode: ArcButtonStyleMode.NORMAL_LIGHT,
-        onClick: () => {
-          if (this.isStarted) {
-            this.stop()
-          } else {
-            this.start()
+  StartButton(): void {
+    Column() {
+      ArcButton({
+        options: new ArcButtonOptions({
+          label: this.isStarted ? 'Stop' : 'Start',
+          position: ArcButtonPosition.BOTTOM_EDGE,
+          styleMode: ArcButtonStyleMode.NORMAL_LIGHT,
+          onClick: (): void => {
+            if (this.isStarted) {
+              this.stop();
+            } else {
+              this.start();
+            }
           }
-        }
-      })
-    })
-  }
-
-  build() {
-    Stack({ alignContent: Alignment.Center }) {
-      // Decorative elements around the circle
-      Circle({ width: 10, height: 10 })
-        .fill('#4EB8DA')
-        .position({ x: '50%', y: '15%' })
-        .translate({ x: -5 })
-
-      Circle({ width: 6, height: 6 })
-        .fill('#4EB8DA')
-        .position({ x: '75%', y: '80%' })
-
-      // Breathing Circle layer with Gradient
-      // Match the gradient end color to the background to avoid square artifacts
-      Circle({ width: 100, height: 100 })
-        .radialGradient({
-          center: [50, 50],
-          radius: 50,
-          colors: [['#4EB8DA', 0.0], ['#E0F7FA', 1.0]]
         })
-        .scale({ x: this.circleScale, y: this.circleScale })
-        .hitTestBehavior(HitTestMode.None)
-        .opacity(0.9)
-        .backgroundColor(Color.Transparent)
-        .clip(true)
-
-      // Text Guidance layer
-      Column({ space: 5 }) {
-        if (this.isStarted) {
-          Text(this.currentPhase.toLowerCase())
-            .fontSize(24)
-            .fontColor('#006064')
-            .fontWeight(FontWeight.Bold)
-          Text(this.phaseCountdown.toString())
-            .fontSize(20)
-            .fontColor('#006064')
-            .opacity(0.8)
-        } else {
-          Text(this.currentTechnique.name)
-            .fontSize(16)
-            .fontColor('#006064')
-            .fontWeight(FontWeight.Bold)
-          Text('Tap Start to begin')
-            .fontSize(12)
-            .fontColor('#546E7A')
-        }
-      }
-      .hitTestBehavior(HitTestMode.None)
-      .backgroundColor(Color.Transparent)
-
-      // Button layer
-      this.StartButton()
+      })
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#E0F7FA')
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    .justifyContent(FlexAlign.End)
+  }
+
+  @Builder
+  BreathingCircle(): void {
+    Stack({ alignContent: Alignment.Center }) {
+      Circle({ width: 10, height: 10 })
+        .fill('#53B8DB')
+        .translate({ x: 0, y: -108 });
+
+      Circle({ width: 10, height: 10 })
+        .fill('#53B8DB')
+        .translate({ x: 78, y: 88 });
+
+      Circle({ width: this.circleSize, height: this.circleSize })
+        .fill('#63BCDD')
+        .opacity(0.95);
+
+      Column({ space: 4 }) {
+        if (this.isStarted) {
+          Text(this.currentPhase.toLowerCase())
+            .fontSize(18)
+            .fontWeight(FontWeight.Medium)
+            .fontColor(Color.White);
+
+          Text(this.phaseCountdown.toString())
+            .fontSize(14)
+            .fontColor(Color.White)
+            .opacity(0.95);
+        } else {
+          Text(this.currentTechnique.name)
+            .fontSize(16)
+            .fontWeight(FontWeight.Bold)
+            .fontColor('#006064')
+            .textAlign(TextAlign.Center);
+
+          Text('Tap Start to begin')
+            .fontSize(12)
+            .fontColor('#5F7480')
+            .textAlign(TextAlign.Center);
+        }
+      }
+      .hitTestBehavior(HitTestMode.None);
+    }
+    .width(240)
+    .height(240);
+  }
+
+  build(): void {
+    Stack() {
+      Column() {
+        this.BreathingCircle()
+      }
+      .width('100%')
+      .height('100%')
+      .justifyContent(FlexAlign.Center)
+      .alignItems(HorizontalAlign.Center)
+      .padding({ bottom: 74 });
+
+      this.StartButton();
+    }
+    .width('100%')
+    .height('100%')
+    .backgroundColor('#E4F6FA');
   }
 }
