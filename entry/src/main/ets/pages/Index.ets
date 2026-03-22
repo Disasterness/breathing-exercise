@@ -31,7 +31,7 @@ struct Index {
   build() {
     RelativeContainer() {
 
-      List({ initialIndex: 1 }) {
+      List({ initialIndex: 1, space: 8 }) {
         ListItem() {
           Text('Breathing Exercises')
             .fontSize(16)
@@ -51,10 +51,7 @@ struct Index {
           url: 'pages/Settings'
         })
         )
-      }.space({
-        unit: LengthUnit.VP,
-        value: 8
-      })
+      }
     }
     .height('100%')
     .width('100%')

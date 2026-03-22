@@ -20,7 +20,7 @@ struct TechniquesPage {
     Column() {
       Text('Techniques').fontSize(22).fontColor('#006064').fontWeight(FontWeight.Bold).margin({ bottom: 10 })
 
-      List() {
+      List({ space: 8 }) {
         ForEach(PRESET_TECHNIQUES, (item: BreathingTechnique) => {
           ListItem() {
             Column({ space: 2 }) {
@@ -48,7 +48,6 @@ struct TechniquesPage {
           }
         }, (item: BreathingTechnique) => item.id)
       }
-      .space({ unit: LengthUnit.VP, value: 8 })
       .height('85%')
     }
     .width('100%')
