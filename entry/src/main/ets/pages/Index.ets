@@ -1,4 +1,4 @@
-import { ArcList, ArcListAttribute, ArcListItem, LengthUnit } from '@kit.ArkUI'
+import { ArcList, ArcListItem, LengthUnit } from '@kit.ArkUI'
 import { TextModifier } from '../modifier/TextModifier'
 
 @Entry
