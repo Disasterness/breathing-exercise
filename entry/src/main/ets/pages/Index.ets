@@ -1,4 +1,4 @@
-import { List, ListItem, LengthUnit } from '@kit.ArkUI'
+import { LengthUnit } from '@kit.ArkUI'
 import { TextModifier } from '../modifier/TextModifier'
 
 @Entry
