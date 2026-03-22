@@ -1,4 +1,4 @@
-import { ArcList, ArcListItem, LengthUnit } from '@kit.ArkUI'
+import { List, ListItem, LengthUnit } from '@kit.ArkUI'
 
 @Entry
 @Component
@@ -26,8 +26,8 @@ struct SettingsPage {
     Column() {
       Text('Settings').fontSize(22).fontColor('#006064').fontWeight(FontWeight.Bold).margin({ bottom: 10 })
 
-      ArcList() {
-        ArcListItem() {
+      List() {
+        ListItem() {
           Column() {
             Text('Session Duration (min)').fontColor('#006064').fontSize(12)
             Row() {
@@ -38,7 +38,7 @@ struct SettingsPage {
           }.padding(10).backgroundColor('#1A4EB8DA').borderRadius(15).width('90%')
         }
 
-        ArcListItem() {
+        ListItem() {
           Column({ space: 5 }) {
             Text('Custom Rhythm (sec)').fontColor('#006064').fontSize(14).fontWeight(FontWeight.Bold)
             this.Adjuster('Inhale', this.customInhale, () => { if (this.customInhale > 1) this.customInhale-- }, () => { this.customInhale++ })
@@ -47,7 +47,7 @@ struct SettingsPage {
           }.padding(10).backgroundColor('#1A4EB8DA').borderRadius(15).width('90%')
         }
 
-        ArcListItem() {
+        ListItem() {
           Row() {
             Text('Daily Reminder').fontColor('#006064')
             Toggle({ type: ToggleType.Switch, isOn: this.dailyReminder })

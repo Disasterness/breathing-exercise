@@ -1,4 +1,4 @@
-import { ArcList, ArcListItem, LengthUnit } from '@kit.ArkUI'
+import { List, ListItem, LengthUnit } from '@kit.ArkUI'
 import { TextModifier } from '../modifier/TextModifier'
 
 @Entry
@@ -8,7 +8,7 @@ struct Index {
 
   @Builder
   CustomListItem(title: string, onClick?: () => void) {
-    ArcListItem() {
+    ListItem() {
       Row() {
         Text(title)
           .attributeModifier(this.textModifier)
@@ -31,8 +31,8 @@ struct Index {
   build() {
     RelativeContainer() {
 
-      ArcList({ initialIndex: 1 }) {
-        ArcListItem() {
+      List({ initialIndex: 1 }) {
+        ListItem() {
           Text('Breathing Exercises')
             .fontSize(16)
             .fontColor('#006064')

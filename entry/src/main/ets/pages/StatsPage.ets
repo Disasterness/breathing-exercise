@@ -1,4 +1,4 @@
-import { ArcList, ArcListItem, LengthUnit } from '@kit.ArkUI'
+import { List, ListItem, LengthUnit } from '@kit.ArkUI'
 
 @Entry
 @Component

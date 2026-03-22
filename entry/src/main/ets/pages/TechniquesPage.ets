@@ -1,4 +1,4 @@
-import { ArcList, ArcListItem, LengthUnit } from '@kit.ArkUI'
+import { List, ListItem, LengthUnit } from '@kit.ArkUI'
 import { BreathingTechnique, PRESET_TECHNIQUES } from '../model/BreathingTechnique'
 
 @Entry
@@ -20,9 +20,9 @@ struct TechniquesPage {
     Column() {
       Text('Techniques').fontSize(22).fontColor('#006064').fontWeight(FontWeight.Bold).margin({ bottom: 10 })
 
-      ArcList() {
+      List() {
         ForEach(PRESET_TECHNIQUES, (item: BreathingTechnique) => {
-          ArcListItem() {
+          ListItem() {
             Column({ space: 2 }) {
               Text(item.name)
                 .fontSize(16)
