@@ -1,10 +1,5 @@
 {
   "src": [
-    "pages/Index",
-    "pages/Settings",
-    "pages/Main",
-    "pages/TechniquesPage",
-    "pages/SummaryPage",
-    "pages/StatsPage"
+    "pages/Index"
   ]
 }

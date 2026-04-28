@@ -1,6 +1,6 @@
-@Entry
 @Component
-struct SettingsPage {
+export struct SettingsPage {
+  @Consume('pageStack') pageStack: NavPathStack;
   @StorageLink('time') time: number = 1;
   @StorageLink('speed') speed: number = 1;
   @StorageLink('customInhale') customInhale: number = 4;
@@ -57,10 +57,11 @@ struct SettingsPage {
   }
 
   build() {
-    Column() {
-      Text('Settings').fontSize(22).fontColor('#006064').fontWeight(FontWeight.Bold).margin({ bottom: 10 })
+    NavDestination() {
+      Column() {
+        Text('Settings').fontSize(22).fontColor('#006064').fontWeight(FontWeight.Bold).margin({ bottom: 10 })
 
-      List() {
+        List() {
         ListItem() {
           Column() {
             Text('Session Duration (min)').fontColor('#006064').fontSize(12)
@@ -89,12 +90,14 @@ struct SettingsPage {
           }.width('90%').justifyContent(FlexAlign.SpaceBetween).padding(10).backgroundColor('#1A4EB8DA').borderRadius(15)
         }
       }
-      .height('80%')
+        .height('80%')
+        .width('100%')
+      }
       .width('100%')
+      .height('100%')
+      .padding(16)
+      .backgroundColor('#E0F7FA')
     }
-    .width('100%')
-    .height('100%')
-    .padding(16)
-    .backgroundColor('#E0F7FA')
+    .hideTitleBar(true)
   }
 }

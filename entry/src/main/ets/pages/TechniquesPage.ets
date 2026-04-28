@@ -1,9 +1,9 @@
 import { LengthUnit } from '@kit.ArkUI'
 import { BreathingTechnique, PRESET_TECHNIQUES } from '../model/BreathingTechnique'
 
-@Entry
 @Component
-struct TechniquesPage {
+export struct TechniquesPage {
+  @Consume('pageStack') pageStack: NavPathStack;
   @StorageLink('selectedTechniqueId') selectedTechniqueId: string = '4-7-8';
   @StorageLink('customInhale') customInhale: number = 4;
   @StorageLink('customHold') customHold: number = 4;
@@ -17,10 +17,11 @@ struct TechniquesPage {
   }
 
   build() {
-    Column() {
-      Text('Techniques').fontSize(22).fontColor('#006064').fontWeight(FontWeight.Bold).margin({ bottom: 10 })
+    NavDestination() {
+      Column() {
+        Text('Techniques').fontSize(22).fontColor('#006064').fontWeight(FontWeight.Bold).margin({ bottom: 10 })
 
-      List({ space: 8 }) {
+        List({ space: 8 }) {
         ForEach(PRESET_TECHNIQUES, (item: BreathingTechnique) => {
           ListItem() {
             Column({ space: 2 }) {
@@ -43,7 +44,7 @@ struct TechniquesPage {
             .borderRadius(15)
             .onClick(() => {
               this.selectedTechniqueId = item.id;
-              this.getUIContext().getRouter().back();
+              this.pageStack.pop();
             })
           }
         }, (item: BreathingTechnique) => item.id)
@@ -54,5 +55,7 @@ struct TechniquesPage {
     .height('100%')
     .padding(12)
     .backgroundColor('#E0F7FA')
+    }
+    .hideTitleBar(true)
   }
 }
