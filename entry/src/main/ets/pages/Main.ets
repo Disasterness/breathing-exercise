@@ -5,9 +5,9 @@ import { BreathingTechnique, PRESET_TECHNIQUES, Phase } from '../model/Breathing
 import { SessionResult } from '../model/SessionModel';
 import { StatsService } from '../service/StatsService';
 
-@Entry
 @Component
-struct Main {
+export struct Main {
+  @Consume('pageStack') pageStack: NavPathStack;
   private sessionTimeout: number | null = null;
   private phaseInterval: number | null = null;
   private sizeInterval: number | null = null;
@@ -116,10 +116,7 @@ struct Main {
 
       this.resetUi();
 
-      this.getUIContext().getRouter().replaceUrl({
-        url: 'pages/SummaryPage',
-        params: { result: result }
-      });
+      this.pageStack.replacePathByName('SummaryPage', result);
       return;
     }
 
@@ -296,8 +293,9 @@ struct Main {
   }
 
   build(): void {
-    Stack() {
-      Column() {
+    NavDestination() {
+      Stack() {
+        Column() {
         this.BreathingCircle()
       }
       .width('100%')
@@ -308,8 +306,10 @@ struct Main {
 
       this.StartButton();
     }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('#E4F6FA');
+      .width('100%')
+      .height('100%')
+      .backgroundColor('#E4F6FA');
+    }
+    .hideTitleBar(true)
   }
 }
